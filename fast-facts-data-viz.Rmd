@@ -1,0 +1,80 @@
+---
+title: "Fast Facts Analysis"
+author: "Alison McGann"
+date: "2023-05-06"
+output: html_document
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Fast Facts
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(skimr)
+```
+
+# Import Fast Facts Data
+
+```{r}
+fast_facts <- read_csv("C:/Users/alison.mcgann/Desktop/R/data-visualization/R_Fast_Facts.csv")
+fast_facts
+
+```
+
+```{r}
+clean_fast_facts <- fast_facts %>%
+  clean_names()
+
+clean_fast_facts
+```
+
+Select Variables of Interest
+
+```{r}
+age_group_summary <- clean_fast_facts %>%
+group_by(age_group) %>%
+drop_na(age_group) %>%
+summarize(n=n()) %>%
+mutate(Percent = n/sum(n)*100)
+
+
+age_group_summary
+
+```
+```{r}
+age_group_summary <- age_group_summary %>%
+  mutate(Percent = round(Percent,1)) 
+
+age_group_summary
+```
+
+
+```{r}
+ggplot(data = age_group_summary, 
+       mapping = aes(x = age_group,  
+                     y = Percent,
+                     fill = age_group)) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_brewer(direction=-1) +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(limits = c(0,50)) +
+  geom_text(aes(label=Percent), 
+            hjust = -0.2) +
+  coord_flip() +
+  labs(title = "Age",
+       subtitle = "West Valley Students, Fall 2022",
+       x="",
+       y="") + 
+  theme(panel.background = element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.y=element_text(colour="grey30",size=11,face="bold"))
+#geom_text(aes(label=percent(Percent/100)),
+```
+
+
